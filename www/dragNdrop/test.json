@@ -1,0 +1,60 @@
+{
+    "layout": {
+      "answer_blocks": "3",
+      "answer_blocks_orientation" : "horizontal",
+      "text_correct": "Json Correct",
+      "text_incorrect": "Json Wrong"
+    },
+    "answers": {
+      "first":{
+        "type": "img",
+        "url" : "https://via.placeholder.com/120",
+        "hight": "120px",
+        "width": "120px",
+        "class": "correct"
+      },
+      "Second":{
+        "type": "html",
+        "conten" : "<h1 style='color: black;'>Test</h1>",
+        "hight": "200px",
+        "width": "200px",
+        "class": "correct"
+      },
+      "third":{
+        "type": "txt",
+        "content" : "one two tree",
+        "class": ""
+      },
+      "four":{
+        "type": "img",
+        "url" : "https://via.placeholder.com/120",
+        "class": "correct"
+      }
+      ,
+      "5":{
+        "type": "img",
+        "url" : "https://via.placeholder.com/120",
+        "class": "correct"
+      }
+      ,
+      "6":{
+        "type": "img",
+        "url" : "https://via.placeholder.com/120",
+        "class": "correct"
+      }
+      ,
+      "7":{
+        "type": "img",
+        "url" : "https://via.placeholder.com/120",
+        "class": " "
+      }
+      ,
+      "8":{
+        "type": "img",
+        "url" : "https://via.placeholder.com/120",
+        "class": ""
+      }
+
+
+    }
+  }

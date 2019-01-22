@@ -1,0 +1,344 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css" /> 
+    
+	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+	<!--    <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+	<script src="http://code.jquery.com/ui/1.8.21/jquery-ui.min.js"></script>-->
+	<script src="jquery.ui.touch-punch.min.js"></script>
+
+	<!-- https://craftpip.github.io/jquery-confirm/ -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+
+	<script type="text/javascript">
+
+
+$( document ).ready(function() {
+/*
+
+
+Todo
+====
+
+- Add text type in
+- Add check function
+- Add auto enable check button.
+- Comments!
+- CSS needs a cleenup/ LESS?
+*/
+
+$.getJSON( "test.json", function( data ) {
+  var items = [];
+
+	var i;
+
+//-- Create corect number if  answer boxes
+	for (i = 0; i < data.layout.answer_blocks; i++) {
+			$( ".aws-boxes" ).append(`<div class="drop-zone" id='drop` + i + `'></div>`);
+	} 
+
+
+	// http://jsfiddle.net/MymHb/1/
+	for (i = 1; i < Object.keys(data.answers).length ; i++) {
+		$( ".drop-boxes").append(` <div class="swap drop" id='swap` + i + `'></div>`);
+	}
+
+	i = 0;
+	$.each( data.answers, function( key, val ) {
+		i++;
+		switch( val.type ) {
+		case "html":
+			$( ".drag-boxes" ).append( `<div class="drag ` + this.class  +  `" id="drag` + i + `">` + this.conten  + `</div>` );
+		break;
+		case "txt":
+			console.log("I am an text");
+//			$( ".drag-boxes" ).append( `<div class="drag ` + this.class  +  `" id="drag` + i + `">` + this.conten  + `</div>` );
+		break;
+		case "img":
+			// do we have hight infomaction?
+			if(typeof this.hight === 'undefined') {
+				// does not exist
+				$( ".drag-boxes" ).append( `<div class="drag ` + this.class  +  `" id="drag` + i + `"><img src="` + this.url  + `" /></div>` );
+			}
+			else {
+				// does exist
+				$( ".drag-boxes" ).append( `<div class="drag ` + this.class  +  `" id="drag` + i + `"><img style="hight:` + this.hight + `; width:`+ this.width +`"  src="` + this.url  + `" /></div>` );
+
+			}
+		break;
+		default:
+			console.log("What am i??");
+		}
+
+// This makes the elements that have the class '.drag' into draggable elements */
+		$('.drag').draggable({
+			revert: 'invalid',
+			scroll: false,
+			stack: ".drag"
+		});
+
+
+		$('.drop-zone, .swap.drop').droppable({
+			drop: function(event, ui) {
+
+//-- ADDING or REMOVEING THE CLASS PLACED.
+				if(  $(this).hasClass( "drop-zone" ) )
+				{
+					$(ui.draggable).addClass("placed");
+//-- HAS THE USER ATTEMPTED ALL OF THE QESTIONS??
+
+				if ( $(".placed").length >= parseInt(data.layout.answer_blocks) - 1  ) {
+					//-- Clear all existing on clicks,this way their cant be more than one.! Clever. IKNOW, Right!
+					// This could also be achived only adding the onclick element if the function is called by the .drop-zone
+					$(this).unbind();
+
+					$("#check").css("opacity" ,"1").on("click", function(event) {
+
+//-- Do we have the same number of correct elements as boxs?.	
+						if (  parseInt($(".placed.correct").length ) >=  (parseInt(data.layout.answer_blocks) - 1) )
+						{
+//--Yes, All answer correct.
+							$.alert({
+							title: 'Alert!',
+							content: '[' +  data.layout.text_correct + ']',							});
+
+						}else{
+//-- Nope
+							$.alert({
+							title: 'Alert!',
+							content: '[' +  data.layout.text_incorrect + ']',
+							});
+						}
+					});
+
+
+					// Add onclick event to function.
+				}else{
+//-- MAKE THE BUTTON SLIGHTLY TRANSPANT AND REMOVE THE ONCLICK EVENT.
+					$("#check").css("opacity" ,"0.5");
+					$("#check").unbind();
+				}
+			}else
+			{
+				$(ui.draggable).removeClass("placed"); 
+			}
+//-- ADOPTING THE ID FROM THE DIV WE JUST DROPED ONTO.
+			var new_id = $(this).attr("id");
+				$(ui.draggable).attr("id",  new_id );
+
+
+			}
+		})
+
+	});
+});
+
+
+
+	
+	/* A function to mark the question, this will show where the labels are positioned wrong by changing their colour */
+	var markAnswers = function(){
+		noCorrect = 0
+		$.each(answered, function( key, value ) {
+			console.log(key, value);
+			//if(key in correct){
+				if (correct[key].match(value)){
+					console.log('correct answer');
+					$('#'+value).css("background-color", "#488ba4");
+					noCorrect++;
+				}else{
+					console.log($(value));
+					$('#'+value).css("background-color", "#E54F00");
+				}
+			//}
+		}
+		);
+		console.log(noCorrect);
+		if(noCorrect == Object.keys(correct).length){
+			alert('Congratulations');
+		}
+	}
+
+});
+</script>    
+
+<style type="text/css">
+body {
+	margin: 0px;
+	font-family: Arial, Helvetica, sans-serif;
+	overflow-x:hidden;
+	
+}
+
+.drag-boxes{
+	width:660px;
+	position:absolute;
+	top:220px;
+}
+.drop-zone, .swap{
+	width:120px;
+	height:120px;
+/*	border:4px solid #ebebe8; */
+	border:4px solid black;
+	display:inline-block;
+	position:absolute;
+	background-color:white;
+	z-index:1;
+}
+.drag {
+	width:120px;
+	height:120px;
+	padding:4px;
+	margin:0 4px 4px 0;
+	display:inline-block;
+	position:relative;
+	float:left;
+	color:white;
+	z-index:2;
+	cursor: move;
+}
+
+#drop1{
+
+}
+
+#drop2{
+	left:142px;
+}
+
+#drop3{
+	left:274px;
+}
+
+#drop4{
+	left:406px;
+}
+
+#drop5{
+	left:538px;
+}
+
+#swap1{
+	top:220px;
+}
+
+#swap2{
+	left:142px;
+	top:220px;
+}
+
+#swap3{
+	left:274px;
+	top:220px;
+}
+
+#swap4{
+	left:406px;
+	top:220px;
+}
+
+#swap5{
+	left:538px;
+	top:220px;
+}
+
+#swap6{
+	top:352px;
+}
+
+#swap7{
+	left:142px;
+	top:352px;
+}
+
+#swap8{
+	left:274px;
+	top:352px;
+}
+
+#swap9{
+	left:406px;
+	top:352px;
+}
+
+#swap10{
+	left:538px;
+	top:352px;
+}
+
+#swap11{
+	top:484px;
+}
+
+#swap12{
+	left:142px;
+	top:484px;
+}
+
+#container{
+	padding:10px;
+	/*border:solid 2px;
+	height:810px;*/
+	width:630px;
+}
+
+#buttons{
+	position:absolute;
+	top:160px;
+	left:230px;
+	z-index:1;
+	cursor:pointer;
+}
+#check{
+	opacity:0.5;
+	cursor:pointer;
+}
+.hidden{
+	display:none;
+}
+.button{
+	display:inline-block;
+	text-decoration:none;
+	padding:9px 18px;
+	background:#244d5b;
+	color:white;
+	width:60px;
+	text-align:center;
+}
+.button:hover{
+	opacity:0.8;
+}
+
+</style>    
+</head>
+
+<body>
+	<div id='container'>
+		
+		<!-- Define the drop boxes -->
+		<div class='aws-boxes'>
+		</div>
+<div class='drop-boxes'>
+
+</div>
+		
+		<!-- Defines the drag boxes -->
+		<div class='drag-boxes'>
+
+
+		</div>
+		
+		<!-- Additional stuff for presentation purposes -->
+	
+		<div id='buttons'>
+			<div class="button" id="check">Submit</div>
+			<a href="" class="button">Reset</a>
+		</div>
+	
+</body>
+</html>
